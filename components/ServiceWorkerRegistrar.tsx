@@ -1,17 +1,17 @@
-import React from 'react'
-import Router from 'next/router'
-import { Workbox, messageSW } from 'workbox-window'
-import { WorkboxEvent } from 'workbox-window/utils/WorkboxEvent'
-import Button from '@material-ui/core/Button'
+import React from "react";
+import Router from "next/router";
+import { Workbox, messageSW } from "workbox-window";
+import { WorkboxEvent } from "workbox-window/utils/WorkboxEvent";
+import Button from "@material-ui/core/Button";
 
-import { generateSnackMessage, SnackbarWrapperState } from './SnackBar'
+import { generateSnackMessage, SnackbarWrapperState } from "./SnackBar";
 
 interface Props {
-  showSnackMessage: SnackbarWrapperState['showSnackMessage']
+  showSnackMessage: SnackbarWrapperState["showSnackMessage"];
 }
 
 interface State {
-  swUpdateWaiting: boolean
+  swUpdateWaiting: boolean;
 }
 
 export default class ServiceWorkerRegistrar extends React.Component<
@@ -19,47 +19,54 @@ export default class ServiceWorkerRegistrar extends React.Component<
   State
 > {
   state: Readonly<State> = {
-    swUpdateWaiting: false,
-  }
+    swUpdateWaiting: false
+  };
 
-  wb: Workbox | undefined
-  registration: ServiceWorkerRegistration | undefined
+  wb: Workbox | undefined;
+  registration: ServiceWorkerRegistration | undefined;
 
   async componentDidMount() {
-    if (!navigator.serviceWorker) return
+    if (!navigator.serviceWorker) return;
 
-    const wb = new Workbox('/sw.js')
-    wb.addEventListener('activated', (ev: WorkboxEvent) => {
+    const wb = new Workbox("/sw.js");
+    this.wb = wb;
+    this.registration = await wb.register();
+    wb.addEventListener("activated", (ev: WorkboxEvent) => {
       // @ts-ignore
       if (ev.isUpdate) {
         // New Service Worker has been activated.
         // You will need to refresh the page.
-        window.location.reload()
+        return window.location.reload();
       }
-    })
-    wb.addEventListener('waiting', this.onSWWaiting)
-    this.wb = wb
-    this.registration = await wb.register()
+      const { showSnackMessage } = this.props;
+      showSnackMessage(
+        generateSnackMessage(
+          { message: "Service Worker Installed" },
+          showSnackMessage
+        )
+      );
+    });
+    wb.addEventListener("waiting", this.onSWWaiting);
 
-    Router.events.on('routeChangeStart', e => {
+    Router.events.on("routeChangeStart", e => {
       if (this.state.swUpdateWaiting && this.wb) {
-        window.location.reload()
+        window.location.reload();
       }
-    })
+    });
   }
 
   private onSWWaiting = () => {
     this.setState({
-      swUpdateWaiting: true,
-    })
+      swUpdateWaiting: true
+    });
     // There is a new version of Service Worker.
     // And now there are two of them.
     // Show the user that he has to reload
-    const { showSnackMessage } = this.props
+    const { showSnackMessage } = this.props;
     showSnackMessage(
       generateSnackMessage(
         {
-          message: 'A new version is now available',
+          message: "A new version is now available",
           action: (
             <Button
               key="undo"
@@ -69,25 +76,25 @@ export default class ServiceWorkerRegistrar extends React.Component<
             >
               RELOAD
             </Button>
-          ),
+          )
         },
         showSnackMessage
       )
-    )
-  }
+    );
+  };
 
   private onReloadClick = async () => {
-    if (!this.registration || !this.registration.active) return
-    const { showSnackMessage } = this.props
+    if (!this.registration || !this.registration.active) return;
+    const { showSnackMessage } = this.props;
     const clientCount = await messageSW(this.registration.active, {
-      type: 'CLIENTS_COUNT',
-    })
+      type: "CLIENTS_COUNT"
+    });
     if (clientCount > 1) {
       return showSnackMessage(
         generateSnackMessage(
           {
             message:
-              'You have other tabs open. You might lose unsaved data on those tabs',
+              "You have other tabs open. You might lose unsaved data on those tabs",
             action: (
               <Button
                 key="undo"
@@ -97,26 +104,26 @@ export default class ServiceWorkerRegistrar extends React.Component<
               >
                 RELOAD THEM ALL?
               </Button>
-            ),
+            )
           },
           showSnackMessage
         )
-      )
+      );
     }
-    this.upgradeServiceWorker()
-  }
+    this.upgradeServiceWorker();
+  };
 
   private upgradeServiceWorker = () => {
-    const { showSnackMessage } = this.props
-    showSnackMessage({ open: false })
+    const { showSnackMessage } = this.props;
+    showSnackMessage({ open: false });
     if (this.registration && this.registration.waiting) {
       this.registration.waiting.postMessage({
-        type: 'SKIP_WAITING',
-      })
+        type: "SKIP_WAITING"
+      });
     }
-  }
+  };
 
   render() {
-    return null
+    return null;
   }
 }
