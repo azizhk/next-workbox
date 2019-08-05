@@ -11,8 +11,7 @@
     "next": "latest",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "workbox-window": "next",
-    "yarn-deduplicate": "1.1.1"
+    "workbox-window": "next"
   },
   "devDependencies": {
     "@types/node": "^12.6.8",
