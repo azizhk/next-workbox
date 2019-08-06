@@ -24,12 +24,10 @@ This example covers:
 - Update service worker when user navigates (by clicking on link or some action)
 - Update service worker when user refreshes the page
 - How to use assetPrefix when assets are uploaded to CDN
+- Precache HTML assets in export mode.
 
-TODO:
-
-- Precache HTML assets as well when in export mode.
-
-Reading:
+Further Reading:
 
 - https://redfin.engineering/how-to-fix-the-refresh-button-when-using-service-workers-a8e27af6df68
-- https://classroom.udacity.com/courses/ud899
+- next-offline: https://github.com/hanford/next-offline
+- Udacity Course: https://classroom.udacity.com/courses/ud899
