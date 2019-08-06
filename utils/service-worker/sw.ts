@@ -1,12 +1,15 @@
 declare var self: ServiceWorkerGlobalScope;
 export {};
 
+interface ManifestEntry {
+  revision?: string;
+  url: string;
+}
+
 declare global {
   interface ServiceWorkerGlobalScope {
-    __WB_MANIFEST: Array<{
-      revision?: string;
-      url: string;
-    }>;
+    __WB_MANIFEST: ManifestEntry[];
+    __WB_INJECT_MANIFEST: ManifestEntry[];
   }
 }
 
@@ -27,7 +30,12 @@ self.addEventListener("message", event => {
   }
 });
 
-precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute(
+  ([] as ManifestEntry[]).concat(
+    self.__WB_MANIFEST || [],
+    self.__WB_INJECT_MANIFEST || []
+  )
+);
 
 // Make sure this is the last fetch event listener
 self.addEventListener("fetch", event => {

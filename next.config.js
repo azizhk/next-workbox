@@ -5,9 +5,6 @@ const CDN_ASSET_PREFIX = "";
 
 module.exports = {
   assetPrefix: CDN_ASSET_PREFIX,
-  experimental: {
-    publicDirectory: true
-  },
   webpack(config, { isServer, dev, buildId }) {
     // This is just was display purposes, not needed for Service Worker Setup
     config.plugins.push(
