@@ -23,10 +23,10 @@ This example covers:
 - Reload all existing tabs when Service Worker is updated to avoid state mismatch.
 - Update service worker when user navigates (by clicking on link or some action)
 - Update service worker when user refreshes the page
+- How to use assetPrefix when assets are uploaded to CDN
 
 TODO:
 
-- Use assetPrefix when assets are uploaded to CDN
 - Precache HTML assets as well when in export mode.
 
 Reading:
